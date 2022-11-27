@@ -10,11 +10,18 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
-from pathlib import Path
+from unipath import Path
+
+from .get_values_from_json import get_value
+
+# Select environment
+environment = f"{get_value('ENVIRONMENT')}"
+
+# Select user model manager
+AUTH_USER_MODEL = f"{get_value('AUTH_USER_MODEL')}"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).ancestor(2)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -23,14 +30,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ii#(jvz()*pcu1m8r81u-lo4#7j7(@rg)369yf*1_scir(yf!8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['msmoda.pythonanywhere.com']
-
+if environment == 'prod':
+    DEBUG = False
+    ALLOWED_HOSTS = ['msmoda.pythonanywhere.com']
+    MEDIA_ROOT = '/home/msmoda/app_core_msmoda/media'
+    MEDIA_URL = '/media/'
+    STATIC_ROOT = '/home/msmoda/app_core_msmoda/static'
+    STATIC_URL = '/static/'
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = ['*']
+    MEDIA_ROOT = '/msmoda/app_core_msmoda/media'
+    MEDIA_URL = '/media/'
+    STATIC_ROOT = '/msmoda/app_core_msmoda/static'
+    STATIC_URL = '/static/'
 
 # Application definition
-
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +54,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+LOCAL_APPS = get_value('LOCAL_APPS')
+
+THIRD_PARTY_APPS = get_value('THIRD_PARTY_APPS')
+
+INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -76,7 +98,7 @@ WSGI_APPLICATION = 'app_core_msmoda.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR.child('db.sqlite3'),
     }
 }
 
@@ -103,28 +125,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-co'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
 
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
-
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# default static files settings for PythonAnywhere.
-# see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
-MEDIA_ROOT = '/home/msmoda/app_core_msmoda/media'
-MEDIA_URL = '/media/'
-STATIC_ROOT = '/home/msmoda/app_core_msmoda/static'
-STATIC_URL = '/static/'

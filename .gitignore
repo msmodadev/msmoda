@@ -279,3 +279,4 @@ poetry.toml
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python,visualstudiocode
 datos_sensibles.txt
+configuracion.json
